@@ -1,0 +1,7 @@
+request_id,company_name,cnpj,uf,document_type,competence
+REQ-001,Empresa Alpha,11.111.111/0001-11,SC,NFE,2026-08
+REQ-002,Empresa Beta,22.222.222/0001-22,SP,NFCE,2026-08
+REQ-003,Empresa Gamma,33.333.333/0001-33,PR,NFSE,2026-08
+REQ-004,Empresa Delta,44.444.444/0001-44,SC,CTE,2026-07
+REQ-005,Empresa Epsilon,55.555.555/0001-55,XX,NFE,2026-08
+REQ-006,Empresa Zeta,66.666.666/0001-66,RS,MDFE,2026-08
