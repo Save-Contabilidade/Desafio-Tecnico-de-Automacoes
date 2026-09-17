@@ -45,7 +45,7 @@ python -m venv .venv
 Windows:
 
 ```powershell
-.venv\Scripts\activate
+.\.venv\Scripts\Activate.ps1
 ```
 
 Linux/macOS:

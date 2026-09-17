@@ -52,6 +52,10 @@ def query_documents(
 
     document_count = (suffix % 3) + 1
 
+    # Reinicia o estado deste request apos sucesso para que uma nova execucao
+    # do desafio reproduza os mesmos cenarios sem reiniciar a API.
+    attempts_by_request.pop(payload.request_id, None)
+
     return {
         "request_id": payload.request_id,
         "status": "success",

@@ -222,9 +222,9 @@ Ao final, apresente no terminal um resumo semelhante a:
 Processamento concluído
 Total: 6
 Sucesso: 3
-Não encontrados: 1
+Não encontrados: 2
 Inválidos: 1
-Erros: 1
+Erros: 0
 ```
 
 O formato exato é livre.
