@@ -1,6 +1,7 @@
 import argparse
 
 from src.reader import read_requests
+from src.validator import validate_request
 
 
 def main() -> None:
@@ -11,7 +12,20 @@ def main() -> None:
 
     requests = read_requests(args.input)
 
+    valid_requests = []
+    invalid_requests = []
+
+    for request in requests:
+        errors = validate_request(request)
+
+        if errors:
+            invalid_requests.append((request, errors))
+        else:
+            valid_requests.append(request)
+
     print(f"Solicitações carregadas: {len(requests)}")
+    print(f"Solicitações válidas: {len(valid_requests)}")
+    print(f"Solicitações inválidas: {len(invalid_requests)}")
 
 
 if __name__ == "__main__":
