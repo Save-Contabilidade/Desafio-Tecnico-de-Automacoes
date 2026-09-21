@@ -39,10 +39,15 @@ def validate(request: DocumentRequest) -> list[str]:
 
     Espera um registro já normalizado por :func:`normalize`.
     """
+    if request.format_error:
+        # Com as colunas deslocadas, as demais regras só produziriam mensagens enganosas.
+        return [request.format_error]
+
     errors: list[str] = []
 
     if not request.request_id:
-        errors.append("request_id vazio")
+        location = f" (linha {request.line_number})" if request.line_number else ""
+        errors.append(f"request_id vazio{location}")
 
     if not (len(request.cnpj) == 14 and request.cnpj.isascii() and request.cnpj.isdigit()):
         errors.append("CNPJ deve conter 14 dígitos numéricos")

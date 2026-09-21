@@ -25,10 +25,31 @@ def test_le_csv_removendo_espacos_bom_e_linhas_vazias(tmp_path):
     assert requests[0].cnpj == "11.111.111/0001-11"  # normalização fica no validador
 
 
-def test_linha_com_colunas_faltando_vira_campos_vazios(tmp_path):
+def test_linha_com_colunas_faltando_e_sinalizada(tmp_path):
     path = tmp_path / "entrada.csv"
     path.write_text(HEADER + "REQ-1,Empresa\n", encoding="utf-8")
-    assert read_requests(path)[0].competence == ""
+    request = read_requests(path)[0]
+    assert request.competence == ""
+    assert request.format_error == "linha com 2 colunas, esperado 6"
+
+
+def test_virgula_sem_aspas_e_sinalizada(tmp_path):
+    path = tmp_path / "entrada.csv"
+    path.write_text(HEADER + "REQ-1,Empresa, Filial,11111111000111,SP,NFE,2026-08\n", encoding="utf-8")
+    assert read_requests(path)[0].format_error.startswith("linha com 7 colunas, esperado 6")
+
+
+def test_virgula_entre_aspas_e_aceita(tmp_path):
+    path = tmp_path / "entrada.csv"
+    path.write_text(HEADER + 'REQ-1,"Empresa, Filial",11111111000111,SP,NFE,2026-08\n', encoding="utf-8")
+    request = read_requests(path)[0]
+    assert (request.company_name, request.format_error) == ("Empresa, Filial", "")
+
+
+def test_guarda_numero_da_linha(tmp_path):
+    path = tmp_path / "entrada.csv"
+    path.write_text(HEADER + "\nREQ-1,A,1,SP,NFE,2026-08\nREQ-2,B,1,SP,NFE,2026-08\n", encoding="utf-8")
+    assert [r.line_number for r in read_requests(path)] == [3, 4]
 
 
 def test_arquivo_inexistente(tmp_path):

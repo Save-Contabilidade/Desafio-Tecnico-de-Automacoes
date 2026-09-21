@@ -39,8 +39,33 @@ def read_requests(path: Path) -> list[DocumentRequest]:
                 values = {column: (row.get(column) or "").strip() for column in REQUIRED_COLUMNS}
                 if not any(values.values()):
                     continue  # linha em branco
-                requests.append(DocumentRequest(**values))
+                requests.append(
+                    DocumentRequest(
+                        **values,
+                        line_number=reader.line_num,
+                        format_error=_column_count_error(row, len(header)),
+                    )
+                )
     except (OSError, UnicodeDecodeError, csv.Error) as exc:
         raise InputFileError(f"Não foi possível ler {path}: {exc}") from exc
 
     return requests
+
+
+def _column_count_error(row: dict[str | None, object], expected: int) -> str:
+    """Detecta linhas com colunas a mais ou a menos que o cabeçalho.
+
+    O ``DictReader`` guarda valores excedentes na chave ``None`` e preenche colunas
+    faltantes com ``None``. Nesses casos os campos ficam deslocados, então validar
+    UF, CNPJ etc. geraria mensagens enganosas; é melhor apontar a causa real.
+    """
+    extra = row.get(None)
+    if isinstance(extra, list) and extra:
+        return (
+            f"linha com {expected + len(extra)} colunas, esperado {expected} "
+            "(vírgula sem aspas em algum campo?)"
+        )
+    missing = sum(1 for key, value in row.items() if key is not None and value is None)
+    if missing:
+        return f"linha com {expected - missing} colunas, esperado {expected}"
+    return ""

@@ -25,6 +25,10 @@ class DocumentRequest:
     uf: str
     document_type: str
     competence: str
+    # Linha no arquivo de entrada (1 = cabeçalho), usada para localizar o registro.
+    line_number: int = 0
+    # Problema estrutural detectado na leitura (ex.: quantidade de colunas errada).
+    format_error: str = ""
 
     def to_payload(self) -> dict[str, str]:
         """Monta o corpo esperado pelo endpoint ``POST /v1/documents/query``."""

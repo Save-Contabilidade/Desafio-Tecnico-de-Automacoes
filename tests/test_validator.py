@@ -65,3 +65,12 @@ def test_competencia_invalida(make_request, competence):
 def test_acumula_todos_os_erros(make_request):
     request = make_request(request_id="", cnpj="123", uf="XX", document_type="X", competence="x")
     assert len(validate(normalize(request))) == 5
+
+
+def test_erro_de_formato_substitui_as_demais_regras(make_request):
+    request = make_request(uf="11111111000111", document_type="SP", format_error="linha com 7 colunas, esperado 6")
+    assert validate(normalize(request)) == ["linha com 7 colunas, esperado 6"]
+
+
+def test_request_id_vazio_informa_a_linha(make_request):
+    assert validate(normalize(make_request(request_id="", line_number=3))) == ["request_id vazio (linha 3)"]
