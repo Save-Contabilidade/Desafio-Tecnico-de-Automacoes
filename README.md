@@ -4,6 +4,14 @@ Este repositório contém o desafio técnico para a vaga de **Desenvolvedor de A
 
 O objetivo é avaliar raciocínio, organização, uso de Git, integração com API, tratamento de erros, logs, testes e documentação.
 
+> **Solução do candidato:** instruções de execução, decisões técnicas e tratamento de
+> erros estão em [src/README.md](src/README.md).
+>
+> ```bash
+> python -m src.main --input input/solicitacoes.csv --output output/resultado.csv
+> pytest
+> ```
+
 ## Antes de começar
 
 Clone o repositório:
