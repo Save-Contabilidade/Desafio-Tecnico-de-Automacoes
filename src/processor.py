@@ -108,7 +108,7 @@ def process_requests(
         logger.log(
             log_level,
             "%s: %s (HTTP %s, %d tentativa(s)) - %s",
-            request.request_id, api_result.status.value, api_result.http_status,
+            request.request_id, api_result.status.value, api_result.http_status or "-",
             api_result.attempts, api_result.message,
         )
         results.append(
