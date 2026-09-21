@@ -1,11 +1,12 @@
 import argparse
+import sys
 from collections import Counter
 from pathlib import Path
 
 from src.config import load_config
 from src.logger import setup_logger
 from src.processor import process_requests
-from src.reader import read_requests
+from src.reader import InputFileError, read_requests
 from src.writer import write_results
 
 
@@ -21,7 +22,13 @@ def main() -> None:
     logger.info("Início do processamento")
 
     config = load_config()
-    requests = read_requests(args.input)
+    try:
+        requests = read_requests(args.input)
+    except InputFileError as exc:
+        logger.error("Erro de entrada: %s", exc)
+        print(f"Erro de entrada: {exc}", file=sys.stderr)
+        raise SystemExit(1) from None
+
     results = process_requests(requests, config)
     write_results(args.output, results)
 
