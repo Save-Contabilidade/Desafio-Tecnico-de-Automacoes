@@ -55,9 +55,9 @@ def load_config(dotenv_path: str | Path | None = None) -> Config:
     try:
         max_attempts = int(attempts_value)
     except ValueError as exc:
-        raise ValueError("MAX_ATTEMPTS deve ser um inteiro maior ou igual a 1") from exc
-    if max_attempts < 1:
-        raise ValueError("MAX_ATTEMPTS deve ser um inteiro maior ou igual a 1")
+        raise ValueError("MAX_ATTEMPTS deve ser um inteiro entre 1 e 3") from exc
+    if not 1 <= max_attempts <= 3:
+        raise ValueError("MAX_ATTEMPTS deve ser um inteiro entre 1 e 3")
 
     return Config(
         api_base_url=api_base_url,

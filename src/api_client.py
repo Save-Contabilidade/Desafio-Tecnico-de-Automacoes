@@ -35,8 +35,8 @@ def query_documents(
     timeout: float,
     max_attempts: int = 3,
 ) -> QueryResult:
-    if isinstance(max_attempts, bool) or not isinstance(max_attempts, int) or max_attempts < 1:
-        raise ValueError("max_attempts deve ser um inteiro positivo")
+    if isinstance(max_attempts, bool) or not isinstance(max_attempts, int) or not 1 <= max_attempts <= 3:
+        raise ValueError("max_attempts deve ser um inteiro entre 1 e 3")
 
     url = f"{base_url.rstrip('/')}/v1/documents/query"
     headers = {"Authorization": f"Bearer {token}"}
