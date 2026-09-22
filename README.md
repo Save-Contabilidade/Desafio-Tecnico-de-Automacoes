@@ -104,3 +104,13 @@ Depois, abra um **Pull Request** para a branch `main`.
 - Poderão existir testes adicionais não disponíveis neste repositório.
 
 Boa sorte!
+
+## Solução do candidato
+
+A documentação da solução (execução, configuração, validações, tratamento de
+erros e testes) está em [docs/SOLUCAO.md](docs/SOLUCAO.md).
+
+```bash
+python -m src.main --input input/solicitacoes.csv --output output/resultado.csv
+pytest
+```
