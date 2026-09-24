@@ -21,6 +21,20 @@ OUTPUT_COLUMNS = (
 )
 
 
+def _apply_default_permissions(name: str) -> None:
+    """Aplica ``0666 & ~umask`` ao arquivo, como faria um ``open()`` comum.
+
+    Não há como ler o umask sem trocá-lo, então o valor é restaurado em seguida.
+    No Windows o ``chmod`` só controla o atributo somente-leitura e nada muda.
+    """
+    umask = os.umask(0)
+    os.umask(umask)
+    try:
+        os.chmod(name, 0o666 & ~umask)
+    except OSError:  # sistemas de arquivos sem suporte a permissões
+        pass
+
+
 def write_results(path: Path, results: Iterable[ProcessingResult]) -> None:
     """Grava o CSV de forma atômica: escreve em um arquivo temporário e o renomeia.
 
@@ -30,6 +44,9 @@ def write_results(path: Path, results: Iterable[ProcessingResult]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, tmp_name = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
     try:
+        # mkstemp cria o arquivo com 0600, e esse modo sobreviveria ao os.replace.
+        # O CSV de saída não é sigiloso: vale o padrão do sistema (0666 menos o umask).
+        _apply_default_permissions(tmp_name)
         with os.fdopen(fd, "w", encoding="utf-8", newline="") as file:
             writer = csv.DictWriter(file, fieldnames=OUTPUT_COLUMNS)
             writer.writeheader()

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import os
 from dataclasses import dataclass
 
@@ -42,6 +43,10 @@ def _read_float(name: str, default: float) -> float:
         value = float(raw)
     except ValueError as exc:
         raise ConfigError(f"{name} deve ser numérico (valor atual: {raw!r})") from exc
+    # float() aceita "inf" e "nan"; ambos passariam pela checagem de sinal e só
+    # quebrariam depois, no time.sleep ou no timeout da requisição.
+    if not math.isfinite(value):
+        raise ConfigError(f"{name} deve ser um número finito (valor atual: {raw!r})")
     if value < 0:
         raise ConfigError(f"{name} não pode ser negativo")
     return value

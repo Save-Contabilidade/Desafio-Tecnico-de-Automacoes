@@ -15,7 +15,8 @@ VALID_UFS = frozenset(
 )
 VALID_DOCUMENT_TYPES = frozenset({"NFE", "NFCE", "NFSE", "CTE", "MDFE"})
 
-_COMPETENCE_PATTERN = re.compile(r"\d{4}-(0[1-9]|1[0-2])")
+# [0-9] em vez de \d: \d casaria dígitos não-ASCII, que a API não aceita.
+_COMPETENCE_PATTERN = re.compile(r"[0-9]{4}-(0[1-9]|1[0-2])")
 _CNPJ_PUNCTUATION = re.compile(r"[.\-/\s]")
 
 

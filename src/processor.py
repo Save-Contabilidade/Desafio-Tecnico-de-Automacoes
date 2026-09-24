@@ -69,8 +69,11 @@ def process_requests(
     for raw in requests:
         request = normalize(raw)
         errors = validate(request)
-        if request.request_id and request.request_id in seen_ids:
-            errors.append("request_id duplicado no arquivo de entrada")
+        if request.request_id:
+            if request.request_id in seen_ids:
+                errors.append("request_id duplicado no arquivo de entrada")
+            # Registrado mesmo se o registro for inválido: o id já apareceu no arquivo.
+            seen_ids.add(request.request_id)
 
         if errors:
             message = "; ".join(errors)
@@ -91,7 +94,6 @@ def process_requests(
             )
             continue
 
-        seen_ids.add(request.request_id)
         logger.info(
             "%s: consultando %s de %s (UF %s, competência %s)",
             request.request_id, request.document_type, request.company_name or request.cnpj,

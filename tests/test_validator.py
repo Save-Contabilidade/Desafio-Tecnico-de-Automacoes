@@ -74,3 +74,9 @@ def test_erro_de_formato_substitui_as_demais_regras(make_request):
 
 def test_request_id_vazio_informa_a_linha(make_request):
     assert validate(normalize(make_request(request_id="", line_number=3))) == ["request_id vazio (linha 3)"]
+
+
+@pytest.mark.parametrize("competence", ["٢٠٢٦-08", "2026-٠8"])
+def test_competencia_com_digitos_nao_ascii_e_invalida(make_request, competence):
+    errors = validate(normalize(make_request(competence=competence)))
+    assert len(errors) == 1 and errors[0].startswith("Competência")

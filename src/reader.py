@@ -60,7 +60,8 @@ def _column_count_error(row: dict[str | None, object], expected: int) -> str:
     UF, CNPJ etc. geraria mensagens enganosas; é melhor apontar a causa real.
     """
     extra = row.get(None)
-    if isinstance(extra, list) and extra:
+    # ``any`` ignora padding vazio (linha terminada em vírgula), que não desloca campo algum.
+    if isinstance(extra, list) and any(extra):
         return (
             f"linha com {expected + len(extra)} colunas, esperado {expected} "
             "(vírgula sem aspas em algum campo?)"

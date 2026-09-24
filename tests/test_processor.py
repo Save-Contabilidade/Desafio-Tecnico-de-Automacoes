@@ -81,3 +81,18 @@ def test_resumo(make_request):
     assert summary.render().splitlines() == [
         "Processamento concluído", "Total: 4", "Sucesso: 1", "Não encontrados: 1", "Inválidos: 1", "Erros: 1",
     ]
+
+
+def test_duplicado_apos_registro_invalido_e_detectado(make_request):
+    # O primeiro REQ-001 é inválido (UF), mas o id já apareceu: o segundo é duplicata.
+    calls = []
+
+    def query(request):
+        calls.append(request.request_id)
+        return ApiResult(ResultStatus.SUCCESS, "ok", attempts=1, http_status=200, document_count=1)
+
+    results = process_requests([make_request(uf="XX"), make_request()], query, clock=fixed_clock)
+
+    assert calls == []
+    assert [r.status for r in results] == [ResultStatus.INVALID, ResultStatus.INVALID]
+    assert "duplicado" in results[1].message

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import csv
+import os
+import stat
 
 import pytest
 
@@ -81,3 +83,23 @@ def test_escreve_csv_com_colunas_obrigatorias(tmp_path):
     assert rows[0]["status"] == "success" and rows[0]["document_count"] == "3"
     assert rows[1]["http_status"] == "" and rows[1]["attempts"] == "0"
     assert list(path.parent.glob("*.tmp")) == []
+
+
+def test_virgula_final_nao_invalida_a_linha(tmp_path):
+    # Padding vazio no fim da linha (comum em exports de planilha) não é erro estrutural.
+    path = tmp_path / "entrada.csv"
+    path.write_text(HEADER + "REQ-1,Empresa,11111111000111,SP,NFE,2026-08,\n", encoding="utf-8")
+    request = read_requests(path)[0]
+    assert request.format_error == ""
+    assert request.competence == "2026-08"
+
+
+@pytest.mark.skipif(os.name == "nt", reason="modo POSIX não se aplica ao Windows")
+def test_csv_de_saida_respeita_o_umask(tmp_path):
+    path = tmp_path / "resultado.csv"
+    anterior = os.umask(0o022)
+    try:
+        write_results(path, [])
+    finally:
+        os.umask(anterior)
+    assert stat.S_IMODE(path.stat().st_mode) == 0o644

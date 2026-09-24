@@ -56,3 +56,17 @@ def test_valores_invalidos(monkeypatch, name, value):
 def test_repr_nao_expoe_token(monkeypatch):
     monkeypatch.setenv("API_TOKEN", "segredo-super-secreto")
     assert "segredo-super-secreto" not in repr(load_settings())
+
+
+@pytest.mark.parametrize(
+    "name,value",
+    [
+        ("REQUEST_TIMEOUT", "inf"), ("REQUEST_TIMEOUT", "nan"),
+        ("RETRY_BACKOFF_SECONDS", "inf"), ("RETRY_BACKOFF_SECONDS", "nan"),
+    ],
+)
+def test_valores_nao_finitos_sao_rejeitados(monkeypatch, name, value):
+    monkeypatch.setenv("API_TOKEN", "abc")
+    monkeypatch.setenv(name, value)
+    with pytest.raises(ConfigError, match=name):
+        load_settings()
